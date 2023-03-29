@@ -27,13 +27,15 @@ ENV AS=/usr/bin/as
 ENV NM=/usr/bin/nm
 ENV RANLIB=/usr/bin/ranlib
 
-ENV USER_ID=1000
-ENV GROUP_ID=1000
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+ENV USERID ${USER_ID}
+ENV GROUPID ${GROUP_ID}
 RUN mkdir -p /home && \
-	groupadd -g ${GROUP_ID} magma && \
-	useradd -l -u ${USER_ID} -K UMASK=0000 -d /home -g magma magma && \
+	groupadd -g ${GROUPID} magma && \
+	useradd -l -u ${USERID} -K UMASK=0000 -d /home -g magma magma && \
 	chown magma:magma /home
-RUN	echo "magma:amgam" | chpasswd && usermod -a -G sudo magma
+RUN	echo "magma:magma" | chpasswd && usermod -a -G sudo magma
 RUN echo "magma ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 RUN mkdir -p ${SHARED} ${OUT} ${COV} && \
