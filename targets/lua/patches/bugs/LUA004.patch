@@ -94,7 +94,7 @@ index 0e1cb01e..008ba707 100644
    L->openupval = NULL;
    L->status = LUA_OK;
    L->errfunc = 0;
-+#ifdef ENABLE_MAGMA_FIXES
++#ifdef MAGMA_ENABLE_FIXES
    L->oldpc = 0;
 +#endif
  }
