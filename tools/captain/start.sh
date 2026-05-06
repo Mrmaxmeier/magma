@@ -38,8 +38,24 @@ source "$MAGMA/tools/captain/common.sh"
 
 IMG_NAME="magma/$FUZZER/$TARGET"
 
+cpuset_supported_for_current_cgroup() {
+    local cgroup_path controllers_file controllers
+    cgroup_path="$(awk -F: '$1 == "0" { print $3 }' /proc/self/cgroup)"
+    [ -z "$cgroup_path" ] && cgroup_path="/"
+    controllers_file="/sys/fs/cgroup${cgroup_path}/cgroup.controllers"
+    [ ! -r "$controllers_file" ] && return 1
+
+    read -r controllers < "$controllers_file"
+    [[ " $controllers " == *" cpuset "* ]]
+}
+
 if [ ! -z $AFFINITY ]; then
-    flag_aff="--cpuset-cpus=$AFFINITY --env=AFFINITY=$AFFINITY"
+    flag_aff="--env=AFFINITY=$AFFINITY"
+    if cpuset_supported_for_current_cgroup; then
+        flag_aff="--cpuset-cpus=$AFFINITY $flag_aff"
+    else
+        echo_time "cpuset controller unavailable; skipping --cpuset-cpus for Podman"
+    fi
 fi
 
 if [ ! -z "$MAGMA_DEBUG" ]; then
