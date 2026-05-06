@@ -19,7 +19,7 @@ trap cleanup EXIT
 IMG_NAME="magma/$FUZZER/$TARGET"
 
 container_id=$(
-podman run -dt --entrypoint bash --volume=`realpath "$SHARED"`:/magma_shared \
+podman run -dt --ulimit core=0 --entrypoint bash --volume=`realpath "$SHARED"`:/magma_shared \
     --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
     "$IMG_NAME"
 )

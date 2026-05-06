@@ -81,14 +81,14 @@ if [ ! -z "$MAGMA_DEBUG" ]; then
 fi
 
 if [ -t 1 ]; then
-    podman run -it --rm $flag_volume \
+    podman run -it --rm $flag_volume --ulimit core=0 \
         --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
         --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
         $flag_aff $flag_ep "$IMG_NAME"
 else
     container_id=$(
-    podman run -dt $flag_volume \
+    podman run -dt $flag_volume --ulimit core=0 \
         --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
         --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
