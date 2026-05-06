@@ -45,10 +45,8 @@ if [ ! -z $SOURCE_COVERAGE ]; then
     coverage_flag="--build-arg source_coverage=1"
 fi
 
-GROUP_ID=$(id -g $USER)
-USER_ID=$(id -u $USER)
-test "$GROUP_ID" = "0" && GROUP_ID=1000
-test "$USER_ID" = "0" && USER_ID=1000
+GROUP_ID=1000
+USER_ID=1000
 set -x
 podman build -t "$IMG_NAME" \
     --target magma_core \
