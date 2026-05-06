@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 ##
 # Pre-requirements:
@@ -144,7 +145,7 @@ start_campaign()
                 get_next_cid "$CAMPAIGN_ARDIR")
 
         errno_lock=69
-        SHELL=/bin/bash flock -xnF -E $errno_lock "${CAMPAIGN_CACHEDIR}/${CACHECID}" \
+        SHELL=bash flock -xnF -E $errno_lock "${CAMPAIGN_CACHEDIR}/${CACHECID}" \
             flock -xnF -E $errno_lock "${CAMPAIGN_ARDIR}/${ARCID}" \
                 -c launch_campaign || \
         if [ $? -eq $errno_lock ]; then
