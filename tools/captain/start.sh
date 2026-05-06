@@ -18,7 +18,7 @@
 
 cleanup() {
     if [ ! -t 1 ]; then
-        docker rm -f $container_id &> /dev/null
+        podman rm -f $container_id &> /dev/null
     fi
     exit 0
 }
@@ -65,14 +65,14 @@ if [ ! -z "$MAGMA_DEBUG" ]; then
 fi
 
 if [ -t 1 ]; then
-    docker run -it --rm $flag_volume \
+    podman run -it --rm $flag_volume \
         --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
         --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
         $flag_aff $flag_ep "$IMG_NAME"
 else
     container_id=$(
-    docker run -dt $flag_volume \
+    podman run -dt $flag_volume \
         --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
         --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
@@ -81,7 +81,7 @@ else
     )
     container_id=$(cut -c-12 <<< $container_id)
     echo_time "Container for $FUZZER/$TARGET/$PROGRAM started in $container_id"
-    docker logs -f "$container_id" &
-    exit_code=$(docker wait $container_id)
+    podman logs -f "$container_id" &
+    exit_code=$(podman wait $container_id)
     exit $exit_code
 fi

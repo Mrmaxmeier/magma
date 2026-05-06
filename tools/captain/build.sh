@@ -49,7 +49,7 @@ USER_ID=$(id -u $USER)
 test "$GROUP_ID" = "0" && GROUP_ID=1000
 test "$USER_ID" = "0" && USER_ID=1000
 set -x
-docker build -t "$IMG_NAME" \
+podman build -t "$IMG_NAME" \
     --target magma_core \
     --build-arg fuzzer_name="$FUZZER" \
     --build-arg target_name="$TARGET" \

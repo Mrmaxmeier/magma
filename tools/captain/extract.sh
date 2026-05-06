@@ -11,7 +11,7 @@
 ##
 
 cleanup() {
-    docker rm -f $container_id 1>/dev/null 2>&1
+    podman rm -f $container_id 1>/dev/null 2>&1
 }
 
 trap cleanup EXIT
@@ -19,14 +19,14 @@ trap cleanup EXIT
 IMG_NAME="magma/$FUZZER/$TARGET"
 
 container_id=$(
-docker run -dt --entrypoint bash --volume=`realpath "$SHARED"`:/magma_shared \
+podman run -dt --entrypoint bash --volume=`realpath "$SHARED"`:/magma_shared \
     --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
     "$IMG_NAME"
 )
 
-docker exec $container_id bash -c '$FUZZER/findings.sh' | \
+podman exec $container_id bash -c '$FUZZER/findings.sh' | \
 while read file; do
-    out="$(docker exec $container_id bash -c '$MAGMA/runonce.sh '"'$file'")"
+    out="$(podman exec $container_id bash -c '$MAGMA/runonce.sh '"'$file'")"
     code=$?
     if [ $code -eq 0 ]; then
         continue;
@@ -43,5 +43,5 @@ while read file; do
     fi
 
     poc=$(mktemp --tmpdir="$POCDIR" "${poc_name}.XXX")
-    docker cp "$container_id:$file" "$poc"
+    podman cp "$container_id:$file" "$poc"
 done
