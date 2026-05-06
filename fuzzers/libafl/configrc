@@ -1,0 +1,4 @@
+libtiff_BUILD_PROGRAMS=(tiff_read_rgba_fuzzer)
+libxml2_BUILD_PROGRAMS=(libxml2_xml_read_memory_fuzzer)
+lua_BUILD_PROGRAMS=(fuzz_lua)
+poppler_BUILD_PROGRAMS=(pdf_fuzzer)
