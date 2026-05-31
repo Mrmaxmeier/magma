@@ -1,3 +1,29 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10,<3.12"
+# dependencies = [
+#     # See exp2json.py — keep pandas on 1.x; pandas 2.x trips
+#     # `Length of new names must be 1, got 6` on the multi-index stack
+#     # path; needs a real migration to clear. Cap Python at 3.11 since
+#     # pandas 1.x has no wheels for 3.12+.
+#     "pandas>=1.1.0,<2.0",
+#     # pandas 1.x was built against numpy 1.x; numpy 2.x is ABI-incompatible.
+#     "numpy<2",
+#     # scipy 1.14+ removed scipy.integrate.trapz which older lifelines uses.
+#     "scipy>=1.4.1,<1.14",
+#     # older lifelines imports pkg_resources which was removed from
+#     # setuptools defaults in Python 3.12; the bundled lifelines version is
+#     # the one whose API surface report_df was written against.
+#     "setuptools",
+#     "matplotlib",
+#     "seaborn>=0.11.0",
+#     "jinja2",
+#     # lifelines 0.28+ stopped importing pkg_resources at top-level.
+#     "lifelines>=0.28",
+#     "scikit-posthocs>=0.6.4",
+# ]
+# ///
+
 import sys
 import json
 import jinja2

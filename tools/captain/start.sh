@@ -81,11 +81,17 @@ if [ ! -z "$MAGMA_DEBUG" ]; then
     flag_volume+=" --volume=$MAGMA/targets/$TARGET:/magma/targets/$TARGET/workdir"
 fi
 
+# Forward fuzzer-specific knobs into the container. Add new ones here when
+# a fuzzer needs to read them from run.sh; an unset/empty var on the host is
+# harmless inside the container.
+flag_extra_env="--env=LIBAFL_LOD_EXPERIMENT=${LIBAFL_LOD_EXPERIMENT:-}"
+
 if [ -t 1 ]; then
     podman run -it --rm $flag_volume --ulimit core=0 \
         --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
         --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
+        $flag_extra_env \
         $flag_aff $flag_ep "$IMG_NAME"
 else
     container_id=$(
@@ -93,6 +99,7 @@ else
         --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
         --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
+        $flag_extra_env \
         --network=none \
         $flag_aff $flag_ep "$IMG_NAME"
     )

@@ -334,14 +334,14 @@ def bug_survival_data(bd):
                 }),
             ]
             group = pd.concat([group, pd.DataFrame(new_rows)], ignore_index=True)
-     
+
         group = group.groupby('Fuzzer')[
             ['Fuzzer', 'Target', 'Program', 'Campaign', 'Metric', 'BugID', 'Time']
         ].apply(fillmissing, name, include_groups=False).reset_index(drop=True)
-        
+
         subgroups = group.groupby(['Fuzzer','Metric'])[
             ['Fuzzer', 'Target', 'Program', 'Campaign', 'Metric', 'BugID', 'Time']
-        ].apply(fit_kmf_one, name, N, include_groups=False)    
+        ].apply(fit_kmf_one, name, N, include_groups=False)
         return subgroups
 
     df = bd.frame

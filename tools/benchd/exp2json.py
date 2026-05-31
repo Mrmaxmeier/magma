@@ -1,4 +1,19 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10,<3.12"
+# dependencies = [
+#     # pandas 2.x is stricter about dict-key dtypes — the campaign-ID "0" key
+#     # parses as int and trips a TypeError on set_names. Keep on 1.x until
+#     # exp2json's dataframe assembly is migrated. pandas 1.x doesn't ship
+#     # wheels for Python 3.13+ either, so cap the Python version too.
+#     "pandas>=1.1.0,<2.0",
+#     # pandas 1.x was built against numpy 1.x; numpy 2.x is ABI-incompatible.
+#     "numpy<2",
+# ]
+# ///
+
+# Python 3.14 changed the default multiprocessing start method on Linux to
+# "forkserver", which can't pickle the closure-based pool initializer below.
 
 import argparse
 from collections import defaultdict

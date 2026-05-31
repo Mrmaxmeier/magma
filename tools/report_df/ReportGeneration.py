@@ -71,8 +71,11 @@ def generate_report(bd, outdir, report_title="Report", **kwargs):
     print("Generated survival plots.")
     ppool = locals()
 
+    # Templates ship alongside this file; resolve relative to it so the
+    # script works no matter the caller's cwd (uv run via shebang etc).
+    templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
     env = jinja2.Environment(loader=jinja2.ChoiceLoader(
-                                        [jinja2.FileSystemLoader('templates'),
+                                        [jinja2.FileSystemLoader(templates_dir),
                                          jinja2.FileSystemLoader(outdir)])
                             )
     base_template = env.get_template('base.md')

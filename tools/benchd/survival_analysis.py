@@ -1,4 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10,<3.12"
+# dependencies = [
+#     "pandas>=1.1.0,<2.0",
+#     "numpy<2",
+#     "lifelines>=0.25.2",
+#     "matplotlib",
+# ]
+# ///
 
 """
 Perform a survival analysis on the Magma time-to-bug results produced by the
