@@ -4,13 +4,13 @@ set -ex
 ##
 # Pre-requirements:
 # - env FUZZER: path to fuzzer work dir
-# - $FUZZER/sources/ pre-populated by stage.sh on the host (rsynced into the
+# - $FUZZER/sources/ pre-populated by sync.sh on the host (rsynced into the
 #   docker context). No network clones for our sources; aflplusplus is pulled
 #   from upstream at a pinned commit.
 ##
 
 if [ ! -d "$FUZZER/sources/lod-sketch" ]; then
-    echo "fetch.sh: expected vendored sources under \$FUZZER/sources/ — run stage.sh on the host first." >&2
+    echo "fetch.sh: expected vendored sources under \$FUZZER/sources/ — run sync.sh on the host first." >&2
     exit 1
 fi
 

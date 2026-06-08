@@ -1,0 +1,4 @@
+# Staged lod-sketch sources, populated on the host by sync.sh before the build.
+/sources/
+# Relocated into place by fetch.sh during the docker build.
+/lod-sketch/

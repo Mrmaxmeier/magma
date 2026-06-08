@@ -25,16 +25,14 @@ mkdir -p "$SHARED/findings"
 
 LOD_EXPERIMENT="${LIBAFL_LOD_EXPERIMENT:-lod}"
 
-# Per-target grammar map. Auto-guess is not wired in this forkserver port (it
-# would require running the target out-of-process to score each candidate
-# grammar's dummy bytes — doable but not v1).
-LOD_FLAGS_libpng_read_fuzzer="--lod png"
-LOD_FLAGS_tiff_read_rgba_fuzzer="--lod tiff"
-LOD_FLAGS_tiffcp="--lod tiff"
-LOD_FLAGS_sndfile_fuzzer="--lod ogg --lod flac --lod wav_chunk"
-LOD_FLAGS_libxml2_xml_read_memory_fuzzer="--lod xml"
-LOD_FLAGS_var="LOD_FLAGS_$PROGRAM"
-LOD_FLAGS="${!LOD_FLAGS_var:-}"
+# Format selection is automatic: --lod-guess scores every registered LOD
+# grammar's skeleton against this target's coverage map at startup and picks
+# the matching one(s). No per-target grammar hardcoding. To pin a grammar
+# manually (e.g. debugging), pass `--lod <name>` via $FUZZARGS — a successful
+# guess still overrides it, so also drop --lod-guess by setting
+# LIBAFL_LOD_GUESS=0.
+LOD_GUESS_FLAG="--lod-guess"
+[ "${LIBAFL_LOD_GUESS:-1}" = "0" ] && LOD_GUESS_FLAG=""
 
 FUZZER_BIN="$FUZZER/lod-sketch/magma-forkserver/target/release/fuzzbench_lod_forkserver"
 
@@ -57,6 +55,6 @@ TARGET_ARGS="${ARGS:--}"
     -o "$SHARED/findings" \
     --logfile "$SHARED/libafl.log" \
     --experiment "$LOD_EXPERIMENT" \
-    $LOD_FLAGS \
+    $LOD_GUESS_FLAG \
     $FUZZARGS \
     -- "$OUT/afl/$PROGRAM" $TARGET_ARGS

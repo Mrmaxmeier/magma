@@ -85,6 +85,11 @@ fi
 # a fuzzer needs to read them from run.sh; an unset/empty var on the host is
 # harmless inside the container.
 flag_extra_env="--env=LIBAFL_LOD_EXPERIMENT=${LIBAFL_LOD_EXPERIMENT:-}"
+# AFL++ refuses to start when the host core_pattern is a pipe; forward this so
+# it proceeds (cores are discarded instantly by `|/bin/false`, so crashes are
+# still caught promptly rather than misread as timeouts). Harmless for fuzzers
+# that don't read it.
+flag_extra_env="$flag_extra_env --env=AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=${AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES:-}"
 
 if [ -t 1 ]; then
     podman run -it --rm $flag_volume --ulimit core=0 \

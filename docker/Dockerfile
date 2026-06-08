@@ -32,6 +32,8 @@ ARG GROUP_ID=1000
 ENV USERID ${USER_ID}
 ENV GROUPID ${GROUP_ID}
 RUN mkdir -p /home && \
+	(userdel -r ubuntu 2>/dev/null || true) && \
+	(groupdel ubuntu 2>/dev/null || true) && \
 	groupadd -g ${GROUPID} magma && \
 	useradd -l -u ${USERID} -K UMASK=0000 -d /home -g magma magma && \
 	chown magma:magma /home

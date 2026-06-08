@@ -55,6 +55,10 @@ rm -f llvm.sh
 apt-get clean -y
 
 # Rust toolchain for the cargo build of fuzzbench_lod_forkserver.
+# The magma user's home is /home (Dockerfile `useradd -d /home`), and build.sh
+# looks for the toolchain under $HOME/.cargo; default MAGMA_HOME accordingly so
+# rustup installs where build.sh expects it.
+MAGMA_HOME="${MAGMA_HOME:-/home}"
 curl https://sh.rustup.rs \
     | sudo -u magma HOME="$MAGMA_HOME" \
         sh -s -- -y --profile minimal --default-toolchain 1.90

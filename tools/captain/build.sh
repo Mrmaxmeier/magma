@@ -21,6 +21,12 @@ MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
 source "$MAGMA/tools/captain/common.sh"
 
+# Which entry in targets/<t>/releases to fetch+build. The (rebased) magma keeps
+# several pinned versions per target (PIONEER = latest, LEGACY_* = historical);
+# fetch_target.sh resolves <TARGET>_<TARGET_VERSION>. Captain never set this, so
+# it defaulted to empty -> "Unsupported link:" at fetch. Default to PIONEER.
+TARGET_VERSION=${TARGET_VERSION:-PIONEER}
+
 CANARY_MODE=${CANARY_MODE:-1}
 
 case $CANARY_MODE in
