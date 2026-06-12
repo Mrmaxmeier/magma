@@ -19,7 +19,8 @@ if [ ! -d "$FUZZER/lod-sketch" ]; then
     exit 1
 fi
 
-INPROC="$FUZZER/lod-sketch/magma-inproc"
+LOD_SKETCH="$FUZZER/lod-sketch"
+INPROC="$LOD_SKETCH/magma-inproc"
 if [ ! -d "$INPROC" ]; then
     echo "build.sh: missing $INPROC — vendored sources are stale?" >&2
     exit 1
@@ -34,15 +35,18 @@ export LIBAFL_EDGES_MAP_SIZE=2621440
 # preinstall.sh); pin it so the build doesn't pick up some other PATH llvm-config.
 export LLVM_CONFIG="${LLVM_CONFIG:-/usr/bin/llvm-config-18}"
 
-cd "$INPROC"
-PATH="$HOME/.cargo/bin:$PATH" cargo build --release
+# lod-sketch is a cargo workspace: artifacts land in $LOD_SKETCH/target/release,
+# not magma-inproc/target/release.
+cd "$LOD_SKETCH"
+PATH="$HOME/.cargo/bin:$PATH" cargo build --release -p magma-inproc
 
-# stub_rt.a holds two SEPARATE objects:
-#   stub_rt.o   - self-contained weak sancov/cmplog stubs (no main, no libafl_main)
-#   stub_main.o - `main` -> libafl_main
-# Keeping them separate lets configure conftests pull only the no-op stubs (so
-# they link AND run), while the real fuzzer pulls main -> libafl_main -> runtime.
+# Two archives:
+#   stub_sancov.a — weak sancov/cmplog stubs only (safe in LIBS / cmake tests)
+#   stub_rt.a     — stubs + `main` -> libafl_main (fuzzing engine)
+STUB_NMAIN="$OUT/stub_rt_no_main.c"
+awk '/^int main\(/{exit} {print}' "$INPROC/stub_rt.c" > "$STUB_NMAIN"
+clang -O3 -c "$STUB_NMAIN" -o "$OUT/stub_sancov.o"
 clang -O3 -c "$INPROC/stub_rt.c" -o "$OUT/stub_rt.o"
-clang -O3 -c "$INPROC/stub_main.c" -o "$OUT/stub_main.o"
-ar rcs "$OUT/stub_rt.a" "$OUT/stub_rt.o" "$OUT/stub_main.o"
-rm -f "$OUT/stub_rt.o" "$OUT/stub_main.o"
+ar rcs "$OUT/stub_sancov.a" "$OUT/stub_sancov.o"
+ar rcs "$OUT/stub_rt.a" "$OUT/stub_sancov.o" "$OUT/stub_rt.o"
+rm -f "$STUB_NMAIN" "$OUT/stub_sancov.o" "$OUT/stub_rt.o"

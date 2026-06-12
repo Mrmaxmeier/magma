@@ -16,7 +16,7 @@ set -ex
 # afl / cmplog build — cmplog is compiled in via trace-cmp.
 ##
 
-REL="$FUZZER/lod-sketch/magma-inproc/target/release"
+REL="$FUZZER/lod-sketch/target/release"
 export CC="$REL/libafl_cc"
 export CXX="$REL/libafl_cxx"
 
@@ -57,9 +57,10 @@ export LIB_FUZZING_ENGINE="$OUT/stub_rt.a"
 # that probe is skipped. Harmless/unused for targets that don't use the macro.
 export ax_cv_c_compiler_version="15.0.7"
 
-# The "fuzzing engine", resolved on demand: stub_rt.a (weak sancov stubs +
-# stub_main.o's main -> libafl_main) followed by the real runtime libmagma_inproc.a.
-export LIBS="$LIBS -lc++ -lc++abi $OUT/stub_rt.a -lmagma_inproc"
+# Weak sancov stubs for configure/cmake compiler tests (no `main` — that lives in
+# stub_rt.a / LIB_FUZZING_ENGINE). The real runtime resolves on demand for the
+# final fuzzer link.
+export LIBS="$LIBS -lc++ -lc++abi $OUT/stub_sancov.a -lmagma_inproc"
 
 # Single instrumented build straight into $OUT (no afl/ or cmplog/ subdirs).
 "$MAGMA/build.sh"
